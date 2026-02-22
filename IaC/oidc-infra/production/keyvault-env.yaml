@@ -1,0 +1,15 @@
+vault:
+  key-vault:
+    - name: "oidc-prod-kv"
+      resource_group_name : "oidc-prod-rg"
+      location: "UK South"
+      sku_name: "standard" 
+      tenant_id: "215b7ce2-5263-4593-a622-da030405d151"
+      soft_delete_retention_days: "7"
+      purge_protection_enabled: true
+      enable_rbac_authorization: true
+      public_network_access_enabled: false
+      tags:
+        Team: "DevOps"
+        Project: "DevOps OIDC"
+        Environment: "Production"

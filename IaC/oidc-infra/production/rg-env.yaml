@@ -1,0 +1,9 @@
+rg:
+  rg:
+    - name: "prod-rg"
+      rg_prefix: "oidc"
+      location: "UK South"
+      tags:
+        Team: "DevOps"
+        Project: "DevOps OIDC"
+        Environment: "Production"
