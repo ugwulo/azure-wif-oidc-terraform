@@ -1,9 +1,10 @@
 provider "azurerm" {
-  # This is only required when the User, Service Principal, or Identity running Terraform lacks the permissions to register Azure Resource Providers.
   features {
     resource_group {
       prevent_deletion_if_contains_resources = true
     }
+    # The provider will be authenticated by the OIDC token
+    # from the GitHub Actions workflow.
   }
   subscription_id = var.ARM_SUBSCRIPTION_ID
 }

@@ -1,0 +1,96 @@
+name: OIDC IaC Deployment
+
+# Trigger on push to main branch and pull requests targeting main, but only for changes in the production directory. Also allow manual triggering with workflow_dispatch.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'IaC/oidc-infra/production/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'IaC/oidc-infra/production/**'
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: 'Run Terraform Apply'
+        required: true
+        default: 'false'
+
+# Use OIDC for authentication to Azure, so we need to request the appropriate permissions.
+permissions:
+  id-token: write
+  contents: read
+
+defaults:
+  run:
+    working-directory: IaC/oidc-infra/production
+
+jobs:
+  terraform-plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Azure Login with OIDC
+        uses: azure/login@v1
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+      - name: Upload Plan Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: IaC/oidc-infra/production/tfplan
+
+  terraform-apply:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    needs: terraform-plan
+
+    # Apply on push to main and require manual approval
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment:
+      name: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Azure Login with OIDC
+        uses: azure/login@v1
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Download Plan Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          path: IaC/oidc-infra/production
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan

@@ -19,17 +19,6 @@ appservice-plan:
         ftps_state: "FtpsOnly"
         always_on: true
         application_stack:
-          docker_image_name: "oidc/oidc-webapp:latest"
-          docker_registry_url: "https://oidcprodacr001.azurecr.io"
-
-    - name: "oidc-prod-db-service"
-      location: "UK West"
-      resource_group_name: "oidc-prod-rg"
-      service_plan_id: "/subscriptions/8c67470f-7b3b-4cfa-9296-dd120f0da9bf/resourceGroups/oidc-prod-rg/providers/Microsoft.Web/serverFarms/oidc-prod-sp-plan"
-      site_config:
-        ftps_state: "FtpsOnly"
-        always_on: true
-        application_stack:
-          docker_image_name: "postgres:15-alpine" #"postgres:18-alpine3.22-dev" # Switch to Docker Hardened Image for better security
-          docker_registry_url: "https://index.docker.io" #"https://dhi.io"
+          docker_image_name: "nginxdemos/hello:latest"
+          docker_registry_url: "https://index.docker.io"
       
