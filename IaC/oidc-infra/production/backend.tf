@@ -4,6 +4,6 @@ terraform {
     storage_account_name = "oidcterraformstorage"
     container_name = "oidc-production-tfstate-container"
     key = "production.tfstate"
-    use_azuread_auth     = true
+    use_azuread_auth     = true # Enable Azure AD authentication for the backend
   }
 }
