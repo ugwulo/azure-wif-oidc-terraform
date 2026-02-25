@@ -69,7 +69,7 @@ jobs:
     # Apply on push to main and require manual approval
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment:
-      name: production
+      name: Production
 
     steps:
       - name: Checkout
